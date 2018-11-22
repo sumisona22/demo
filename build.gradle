@@ -5,6 +5,9 @@ buildscript {
 	repositories {
 		mavenCentral()
 		jcenter()
+        ivy {
+            layout 'maven'
+        }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
