@@ -63,5 +63,5 @@ publishing {
 	}
 }
 
-artifactoryPublish.dependsOn bootJar
+artifactoryPublish.dependsOn bootRepackage
 
