@@ -4,9 +4,11 @@ buildscript {
 	}
 	repositories {
 		mavenCentral()
+		jcenter()
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1"
 	}
 }
 
@@ -14,6 +16,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'ivy-publish'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
@@ -21,10 +25,43 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	jcenter()
 }
 
+dependencies {
+	compile 'org.scala-lang:scala-library:2.11.2'
+}
+
+tasks.withType(ScalaCompile) {
+	scalaCompileOptions.useAnt = false
+}
 
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
+
+artifactory {
+	contextUrl = "http://localhost:8081/artifactory"
+	publish {
+		repository {
+			repoKey = 'gradle-dev'
+			username = "admin"
+			password = "artifactory"
+		}
+		defaults {
+			publications ('ivyJava')
+		}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(IvyPublication) {
+			from components.java
+		}
+	}
+}
+
+artifactoryPublish.dependsOn bootJar
+
